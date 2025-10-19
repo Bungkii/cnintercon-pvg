@@ -1,794 +1,88 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shanghai Trip Planner 13–17 ต.ค. 2025</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Noto Sans Thai', sans-serif; }
-        .day-card { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        .fade-in { animation: fadeIn 0.6s ease-in-out; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .card-shadow {
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-        .icon-bounce {
-            animation: bounce 2s infinite;
-        }
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
-        }
-        /* Modal-specific styles */
-        .modal-enter { opacity: 0; }
-        .modal-enter-active { opacity: 1; transition: opacity 0.3s ease-out; }
-        .modal-leave-active { opacity: 0; transition: opacity 0.3s ease-in; }
-        .modal-content-enter { transform: translateY(-50px); opacity: 0; }
-        .modal-content-enter-active { transform: translateY(0); opacity: 1; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-
-        /* Custom App Card Styles */
-        .app-card {
-            display: flex;
-            align-items: center;
-            padding: 1rem;
-            border-radius: 0.75rem;
-            font-size: 0.875rem;
-            transition: background-color 0.2s;
-            height: 100%; /* Ensure consistent height */
-        }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>DEMO - แตะบัตรติ๊กถูกสีเขียว</title>
+<style>
+  :root{--red:#c8102e;--white:#fff;--green:#2e8b57;}
+  html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans",Arial;background:#fafafa;color:#111;}
+  .wrap{max-width:480px;margin:40px auto;padding:20px;background:var(--white);border-radius:12px;box-shadow:0 12px 36px rgba(0,0,0,0.06);border:1px solid #f0f0f0;}
+  .head{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+  .logo{width:56px;height:56px;border-radius:10px;background:var(--red);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:22px}
+  h1{margin:0;font-size:18px}
+  p.lead{margin:4px 0 0;color:#666;font-size:13px}
+  .warn{margin-top:12px;background:#fff3f3;border:1px solid #ffd6d6;padding:8px;border-radius:8px;color:#900;font-size:13px}
+  .tapArea{margin-top:16px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:22px;border:2px dashed #f1f1f1;cursor:pointer;position:relative;transition:transform .08s,box-shadow .12s;background:linear-gradient(180deg,#fff,#fff);}
+  .tapArea:active{transform:scale(.995);}
+  .cardBox{width:280px;height:140px;border-radius:12px;background:var(--red);color:#fff;display:flex;flex-direction:column;justify-content:center;padding:14px;box-shadow:0 10px 30px rgba(200,0,40,0.08);text-align:left;position:relative}
+  .cardId{font-weight:800;font-size:16px}
+  .cardName{font-size:13px;opacity:.95;margin-top:6px}
+  .checkmark{position:absolute;top:8px;right:8px;font-size:32px;color:var(--green);display:none;pointer-events:none;}
+  .hint{margin-top:12px;padding:8px 12px;border-radius:999px;background:#fff;color:var(--red);font-weight:700}
+  footer{margin-top:14px;font-size:12px;color:#666;text-align:center}
+  @media(max-width:420px){.cardBox{width:220px;height:110px}}
+</style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
-    <header class="relative h-80 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 overflow-hidden">
-        <div class="absolute inset-0 bg-black bg-opacity-20"></div>
-        <div class="relative z-10 container mx-auto px-4 h-full flex flex-col justify-center items-center text-white text-center">
-            <h1 class="text-4xl md:text-6xl font-bold mb-4 drop-shadow-lg">Shanghai Trip Planner</h1>
-            <p class="text-xl md:text-2xl font-light mb-6">13–17 ตุลาคม 2025</p>
-            <div class="flex space-x-8 text-sm md:text-base">
-                <div class="flex items-center">
-                    <span class="text-2xl mr-2">🏙️</span>
-                    <span>The Bund</span>
-                </div>
-                <div class="flex items-center">
-                    <span class="text-2xl mr-2">🏰</span>
-                    <span>Disneyland</span>
-                </div>
-            </div>
-        </div>
-        <div class="absolute top-10 left-10 text-6xl opacity-20 icon-bounce">🎡</div>
-        <div class="absolute bottom-10 right-10 text-4xl opacity-20 icon-bounce" style="animation-delay: 1s;">🎢</div>
-    </header>
-
-    <nav class="sticky top-0 z-50 bg-white bg-opacity-90 backdrop-blur-sm shadow-lg">
-        <div class="container mx-auto px-4 py-4">
-            <div class="flex justify-between items-center">
-                <button id="prevDay" class="flex items-center px-6 py-3 bg-gradient-to-r from-purple-400 to-pink-400 text-white rounded-full hover:from-purple-500 hover:to-pink-500 transition-all duration-300 shadow-lg">
-                    <span class="text-xl mr-2">←</span>
-                    <span class="font-medium">Previous Day</span>
-                </button>
-                
-                <div id="dayIndicator" class="text-center">
-                    <div class="text-2xl font-bold text-gray-800">วันที่ 1</div>
-                    <div class="text-sm text-gray-600">13 ตุลาคม 2025</div>
-                </div>
-                
-                <button id="nextDay" class="flex items-center px-6 py-3 bg-gradient-to-r from-blue-400 to-purple-400 text-white rounded-full hover:from-blue-500 hover:to-purple-500 transition-all duration-300 shadow-lg">
-                    <span class="font-medium">Next Day</span>
-                    <span class="text-xl ml-2">→</span>
-                </button>
-            </div>
-        </div>
-    </nav>
-
-    <main class="container mx-auto px-4 py-8">
-        <div id="dayContainer" class="relative overflow-hidden mb-12">
-            
-            <div class="day-card fade-in" data-day="1">
-                <div class="bg-white rounded-3xl p-8 card-shadow mb-8">
-                    <div class="flex items-center mb-6">
-                        <div class="text-6xl mr-4">✈️</div>
-                        <div>
-                            <h2 class="text-3xl font-bold text-gray-800">วันที่ 1 – วันถึง + เที่ยวเมืองเก่า</h2>
-                            <p class="text-lg text-gray-600">13 ตุลาคม 2025 • เวลา 05:30 - 21:00</p>
-                        </div>
-                    </div>
-                    
-                    <div class="grid md:grid-cols-2 gap-8">
-                        <div class="space-y-6">
-                            <div class="flex items-start space-x-4 p-4 bg-blue-50 rounded-2xl cursor-pointer hover:bg-blue-100 transition duration-200 activity-item"
-                                data-title="05:30 – ถึงสนามบิน Pudong (PVG)"
-                                data-icon="🛬"
-                                data-time="05:30"
-                                data-desc="รวมพลหน้าทางออก Arrival Hall Gate 6 (T2) พร้อมรับเอกสารและตรวจสอบสัมภาระ">
-                                <span class="text-2xl">🛬</span>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">05:30 – ถึงสนามบิน Pudong (PVG)</h3>
-                                    <p class="text-gray-600">รวมพลหน้าทางออก Arrival Hall Gate 6 (T2)</p>
-                                </div>
-                            </div>
-
-                            <div class="flex items-start space-x-4 p-4 bg-green-50 rounded-2xl cursor-pointer hover:bg-green-100 transition duration-200 activity-item"
-                                data-title="หลังผ่าน ตม. → รับกระเป๋า → ซื้อตั๋ว Maglev"
-                                data-icon="🎫"
-                                data-time="06:00 (โดยประมาณ)"
-                                data-desc="ซื้อตั๋วรถไฟ Maglev แบบเที่ยวเดียว (Single trip) ราคา 45 หยวน และเตรียมบัตร Octopus/Shanghai Public Transportation Card">
-                                <span class="text-2xl">🎫</span>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">หลังผ่าน ตม. → รับกระเป๋า → ซื้อตั๋ว Maglev Single trip ticket</h3>
-                                    <p class="text-gray-600">ราคา 45 หยวน • จุดซื้อ: คาน์เตอร์ขายตั๋วรถไฟ Maglev หรือ ตู้ขายตั๋วอัตโนมัติ</p>
-                                </div>
-                            </div>
-
-                            <div class="flex items-start space-x-4 p-4 bg-teal-50 rounded-2xl cursor-pointer hover:bg-teal-100 transition duration-200 activity-item"
-                                data-title="07:00 – ออกเดินทางเข้าเมือง (Metro)"
-                                data-icon="🚇"
-                                data-time="07:00"
-                                data-desc="ใช้รถไฟ Line 2 หรือ Maglev ต่อ Line 2 ไปลง People's Square หรือ East Nanjing Road เพื่อเช็คอินหรือฝากกระเป๋าที่โรงแรม">
-                                <span class="text-2xl">🚇</span>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">07:00 – ออกเดินทางเข้าเมือง (Metro)</h3>
-                                    <p class="text-gray-600">เส้นทาง: Line 2 → ลง People's Square / East Nanjing Road • ใช้เวลา ~1 ชม. • เช็คอิน/ฝากกระเป๋า</p>
-                                </div>
-                            </div>
-
-                            <div class="flex items-start space-x-4 p-4 bg-yellow-50 rounded-2xl cursor-pointer hover:bg-yellow-100 transition duration-200 activity-item"
-                                data-title="09:00 – Yu Garden (豫园) และตลาดรอบ ๆ"
-                                data-icon="🏮"
-                                data-time="09:00 - 11:00"
-                                data-desc="เที่ยวชมสวนจีนโบราณ Yu Garden และลองชิม Nanxiang Steamed Bun (เสียวหลงเปา), ปอเปี๊ยะทอด และขนมโบราณที่ตลาด">
-                                <span class="text-2xl">🏮</span>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">09:00 – Yu Garden (豫园) และตลาดรอบ ๆ</h3>
-                                    <p class="text-gray-600">สถานี: Yuyuan Garden (Line 10) Exit 1,3 • ตลาดโบราณ: Nanxiang Steamed Bun(เสียวหลงเปา), ปอเปี๊ยะทอด, ขนมโบราณ</p>
-                                </div>
-                            </div>
-
-                            <div class="flex items-start space-x-4 p-4 bg-amber-50 rounded-2xl cursor-pointer hover:bg-amber-100 transition duration-200 activity-item"
-                                data-title="11:00 – Shanghai Ocean Aquarium"
-                                data-icon="🐠"
-                                data-time="11:00 - 14:00"
-                                data-desc="เข้าชมอุโมงค์ใต้น้ำที่ยาวที่สุดแห่งหนึ่งในโลก และชมสัตว์ทะเลหลากหลายชนิด ราคาตั๋ว ผู้ใหญ่ 160 RMB">
-                                <span class="text-2xl">🐠</span>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">11:00 – Shanghai Ocean Aquarium</h3>
-                                    <p class="text-gray-600">ราคาตั๋ว • ผู้ใหญ่ 160 RMB เด็ก 110 RMB เด็กต่ำกว่า 6 ขวบ 110 RMB</p>
-                                </div>
-                            </div>
-
-                            <div class="flex items-start space-x-4 p-4 bg-rose-50 rounded-2xl cursor-pointer hover:bg-rose-100 transition duration-200 activity-item"
-                                data-title="14:00 – Southside Story (มื้อกลางวัน)"
-                                data-icon="🍜"
-                                data-time="14:00 - 16:00"
-                                data-desc="มื้อกลางวันมื้อแรกที่เซี่ยงไฮ้ ร้านอาหารอยู่ใน Super Brand Mall ของเครือ CP">
-                                <span class="text-2xl">🍜</span>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">14:00 – Southside Story</h3>
-                                    <p class="text-gray-600">มื้อกลางวัน • อยู่ใน Super Brand Mall ของ CP</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-start space-x-4 p-4 bg-amber-50 rounded-2xl cursor-pointer hover:bg-amber-100 transition duration-200 activity-item"
-                                data-title="16:00 – เข้าโรงแรม"
-                                data-icon="🏨"
-                                data-time="16:00 - 17:00"
-                                data-desc="เช็คอินเข้าห้องพักและพักผ่อนเล็กน้อยก่อนออกไปเดินเล่น The Bund">
-                                <span class="text-2xl">🏨</span>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">16:00 – เข้าโรงแรม</h3>
-                                    <p class="text-gray-600">แวะพักผ่อน เอาของไปเก็บ</p>
-                                </div>
-                            </div>
-
-                            <div class="flex items-start space-x-4 p-4 bg-purple-50 rounded-2xl cursor-pointer hover:bg-purple-100 transition duration-200 activity-item"
-                                data-title="17:30 – เดินเล่น The Bund (外滩)"
-                                data-icon="🌆"
-                                data-time="17:30 - 19:00"
-                                data-desc="ชมวิวแม่น้ำหวงผู่และตึกระฟ้าฝั่งผู่ตง (Oriental Pearl, Jinmao) พร้อมตึกธนาคารสไตล์ยุโรปฝั่งผู่ซี">
-                                <span class="text-2xl">🌆</span>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">17:30 – เดินเล่น The Bund (外滩)</h3>
-                                    <p class="text-gray-600">ถ่ายรูปแลนด์มาร์ค: Oriental Pearl, Jinmao, ตึก Bank สไตล์ยุโรป</p>
-                                </div>
-                            </div>
-
-                            <div class="flex items-start space-x-4 p-4 bg-indigo-50 rounded-2xl cursor-pointer hover:bg-indigo-100 transition duration-200 activity-item"
-                                data-title="19:00 – Nanjing Road Night Walk"
-                                data-icon="🚶‍♀️"
-                                data-time="19:00 - 21:00"
-                                data-desc="เดินชมไฟตึกยามค่ำคืนและช้อปปิ้งเล็กน้อยที่ถนนคนเดินชื่อดังของเซี่ยงไฮ้">
-                                <span class="text-2xl">🚶‍♀️</span>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">19:00 – Nanjing Road Night Walk</h3>
-                                    <p class="text-gray-600">เดินชมไฟตึกยามค่ำคืน • ช้อปปิ้งเบา ๆ</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="space-y-4">
-                            <h3 class="text-xl font-semibold text-gray-800 mb-4">📸 ไฮไลท์วันนี้</h3>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl p-4 text-center">
-                                    <div class="text-4xl mb-2">🏮</div>
-                                    <p class="text-sm font-medium">Yu Garden</p>
-                                </div>
-                                <div class="bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl p-4 text-center">
-                                    <div class="text-4xl mb-2">🌆</div>
-                                    <p class="text-sm font-medium">The Bund</p>
-                                </div>
-                                <div class="bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-2xl p-4 text-center">
-                                    <div class="text-4xl mb-2">🛍️</div>
-                                    <p class="text-sm font-medium">Nanjing Road</p>
-                                </div>
-                                <div class="bg-gradient-to-br from-amber-100 to-amber-200 rounded-2xl p-4 text-center">
-                                    <div class="text-4xl mb-2">🐠</div>
-                                    <p class="text-sm font-medium">Aquarium</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="day-card hidden" data-day="2">
-                <div class="bg-white rounded-3xl p-8 card-shadow mb-8">
-                    <div class="flex items-center mb-6">
-                        <div class="text-6xl mr-4">🦀</div>
-                        <div>
-                            <h2 class="text-3xl font-bold text-gray-800">วันที่ 2 – เมืองเก่า & คาเฟ่</h2>
-                            <p class="text-lg text-gray-600">14 ตุลาคม 2025 • เวลา 09:00 - 18:30</p>
-                        </div>
-                    </div>
-                    
-                    <div class="grid md:grid-cols-2 gap-8">
-                        <div class="space-y-6">
-                            <div class="flex items-start space-x-4 p-4 bg-amber-50 rounded-2xl cursor-pointer hover:bg-amber-100 transition duration-200 activity-item"
-                                data-title="09:30-10:15 – Supreme Crab (มื้อเช้าแบบ local)"
-                                data-icon="🍜"
-                                data-time="09:30 - 10:15"
-                                data-desc="ลองชิมบะหมี่หรือเสี่ยวหลงเปาไส้ปูท้องถิ่น">
-                                <span class="text-2xl">🍜</span>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">09:30-10:15 – Supreme Crab (มื้อเช้าแบบ local)</h3>
-                                    <p class="text-gray-600">เผื่อเวลารอคิว</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-start space-x-4 p-4 bg-sky-50 rounded-2xl cursor-pointer hover:bg-sky-100 transition duration-200 activity-item"
-                                data-title="12:45-14:00 – Shanghai Natural History Museum"
-                                data-icon="🏛️"
-                                data-time="12:45 - 14:00"
-                                data-desc="พิพิธภัณฑ์ประวัติศาสตร์ธรรมชาติขนาดใหญ่ แสดงเรื่องราวตั้งแต่ยุคไดโนเสาร์จนถึงปัจจุบัน">
-                                <span class="text-2xl">🏛️</span>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">10:15-12:15 – Shanghai Natural History Museum</h3>
-                                    <p class="text-gray-600">Line 13 → Natural History Museum Exit 1</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-start space-x-4 p-4 bg-red-50 rounded-2xl cursor-pointer hover:bg-red-100 transition duration-200 activity-item"
-                                data-title="12:45-12:30 – 天安千树(1000 TREES) Shanghai"
-                                data-icon="🎨"
-                                data-time="10:45 - 12:30"
-                                data-desc="ซอยศิลปะและแหล่งรวมร้านค้าเล็ก ๆ ของฝาก ของที่ระลึก และคาเฟ่">
-                                <span class="text-2xl">🎨</span>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">12:45-12:30 – 天安千树(1000 TREES) Shanghai</h3>
-                                    <p class="text-gray-600">Line 13 → Jiangning Road Exit 1, เดินได้</p>
-                                </div>
-                            </div>
-
-                            <div class="flex items-start space-x-4 p-4 bg-green-50 rounded-2xl cursor-pointer hover:bg-green-100 transition duration-200 activity-item"
-                                data-title="14:30-16:00 – Starbucks Reserve Roastery"
-                                data-icon="☕"
-                                data-time="14:30 - 16:00"
-                                data-desc="เยี่ยมชม Starbucks Reserve ที่ใหญ่ที่สุดแห่งหนึ่งในโลก">
-                                <span class="text-2xl">☕</span>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">13:00-15:00 – Starbucks Reserve Roastery</h3>
-                                    <p class="text-gray-600">Line 2/12/13 → West Nanjing Rd. เดิน 10 นาที</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-start space-x-4 p-4 bg-blue-50 rounded-2xl cursor-pointer hover:bg-blue-100 transition duration-200 activity-item"
-                                data-title="16:30-18:00 – Dinner: New SukiYasu Yuehui Plaza"
-                                data-icon="🍲"
-                                data-time="16:30 - 18:30"
-                                data-desc="Dinner ที่ New SukiYasu">
-                                <span class="text-2xl">🍲</span>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">16:30-18:30 – Dinner: New SukiYasu Yuehui Plaza</h3>
-                                    <p class="text-600">เดิน</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-start space-x-4 p-4 bg-purple-50 rounded-2xl cursor-pointer hover:bg-purple-100 transition duration-200 activity-item"
-                                data-title="18:30 – ช้อปปิ้ง West Nanjing Rd. - Raffles City"
-                                data-icon="🛍️"
-                                data-time="18:30-20:00"
-                                data-desc="เดินช้อปปิ้งที่ห้างสรรพสินค้าย่าน West Nanjing Road">
-                                <span class="text-2xl">🛍️</span>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">18:30 – ช้อปปิ้ง West Nanjing Rd. - Raffles City</h3>
-                                    <p class="text-gray-600">เดิน</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="space-y-4">
-                            <h3 class="text-xl font-semibold text-gray-800 mb-4">🍽️ Food & Culture</h3>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="bg-gradient-to-br from-amber-100 to-red-200 rounded-2xl p-4 text-center">
-                                    <div class="text-4xl mb-2">🍜</div>
-                                    <p class="text-sm font-medium">Supreme Crab</p>
-                                </div>
-                                <div class="bg-gradient-to-br from-red-100 to-pink-200 rounded-2xl p-4 text-center">
-                                    <div class="text-4xl mb-2">🎨</div>
-                                    <p class="text-sm font-medium">Tianzifang</p>
-                                </div>
-                                <div class="bg-gradient-to-br from-sky-100 to-cyan-200 rounded-2xl p-4 text-center">
-                                    <div class="text-4xl mb-2">🏛️</div>
-                                    <p class="text-sm font-medium">Natural History</p>
-                                </div>
-                                <div class="bg-gradient-to-br from-green-100 to-emerald-200 rounded-2xl p-4 text-center">
-                                    <div class="text-4xl mb-2">☕</div>
-                                    <p class="text-sm font-medium">Starbucks Reserve</p>
-                                </div>
-                                <div class="bg-gradient-to-br from-blue-100 to-indigo-200 rounded-2xl p-4 text-center">
-                                    <div class="text-4xl mb-2">🍲</div>
-                                    <p class="text-sm font-medium">New SukiYasu</p>
-                                </div>
-                                <div class="bg-gradient-to-br from-purple-100 to-violet-200 rounded-2xl p-4 text-center">
-                                    <div class="text-4xl mb-2">🛍️</div>
-                                    <p class="text-sm font-medium">Raffles City</p>
-                                </div>
-                            </div>
-
-                            <div class="bg-gradient-to-r from-pink-100 to-purple-100 rounded-2xl p-6 mt-6">
-                                <h4 class="font-semibold text-gray-800 mb-2">🛒 Shopping Tips</h4>
-                                <ul class="text-sm text-gray-600 space-y-1">
-                                    <li>• Tianzifang - ของฝากแฮนด์เมด</li>
-                                    <li>• Starbucks Reserve - กาแฟใหญ่ที่สุดในโลก</li>
-                                    <li>• West Nanjing Road - ห้างสรรพสินค้า</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="day-card hidden" data-day="3">
-                <div class="bg-white rounded-3xl p-8 card-shadow mb-8">
-                    <div class="flex items-center mb-6">
-                        <div class="text-6xl mr-4">🏰</div>
-                        <div>
-                            <h2 class="text-3xl font-bold text-gray-800">วันที่ 3 – เต็มวันที่ Shanghai Disneyland</h2>
-                            <p class="text-lg text-gray-600">15 ตุลาคม 2025 • เช้า - ค่ำ</p>
-                        </div>
-                    </div>
-                    
-                    <div class="grid md:grid-cols-2 gap-8">
-                        <div class="space-y-6">
-                            <div class="flex items-start space-x-4 p-4 bg-blue-50 rounded-2xl cursor-pointer hover:bg-blue-100 transition duration-200 activity-item"
-                                data-title="เต็มวัน – Shanghai Disneyland"
-                                data-icon="🎢"
-                                data-time="09:00 - 21:00"
-                                data-desc="ใช้เวลาตลอดวันในสวนสนุก สนุกกับเครื่องเล่นยอดนิยม เช่น TRON Lightcycle Power Run และชมพาเหรดพร้อมดอกไม้ไฟยามค่ำคืน">
-                                <span class="text-2xl">🎢</span>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">เช้า - ค่ำ – Shanghai Disneyland</h3>
-                                    <p class="text-gray-600">เครื่องเล่น, พาเหรด, ดอกไม้ไฟ • ซื้อบัตรล่วงหน้า: Trip.com / Klook</p>
-                                </div>
-                            </div>
-
-                            <div class="flex items-start space-x-4 p-4 bg-emerald-50 rounded-2xl cursor-pointer hover:bg-emerald-100 transition duration-200 activity-item"
-                                data-title="มื้ออาหารในสวนสนุก"
-                                data-icon="🍽️"
-                                data-time="กลางวัน/เย็น"
-                                data-desc="ร้านอาหารแนะนำ: Royal Banquet Hall (จองล่วงหน้า) หรือ Tribal Table">
-                                <span class="text-2xl">🍽️</span>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">มื้ออาหารในสวนสนุก</h3>
-                                    <p class="text-gray-600">มีร้านอาหารหลายจุด • Mickey Café • Royal Banquet Hall • Tribal Table</p>
-                                </div>
-                            </div>
-
-                            <div class="flex items-start space-x-4 p-4 bg-purple-50 rounded-2xl cursor-pointer hover:bg-purple-100 transition duration-200 activity-item"
-                                data-title="การเดินทาง"
-                                data-icon="🚇"
-                                data-time="08:00 / 21:30"
-                                data-desc="เดินทางด้วย Line 11 ไป-กลับ Disneyland Station">
-                                <span class="text-2xl">🚇</span>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">การเดินทาง</h3>
-                                    <p class="text-gray-600">Line 11 → Disneyland Station</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="space-y-4">
-                            <h3 class="text-xl font-semibold text-gray-800 mb-4">🎠 Disney Highlights</h3>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="bg-gradient-to-br from-blue-100 to-cyan-200 rounded-2xl p-4 text-center">
-                                    <div class="text-4xl mb-2">🎢</div>
-                                    <p class="text-sm font-medium">เครื่องเล่น</p>
-                                </div>
-                                <div class="bg-gradient-to-br from-amber-100 to-orange-200 rounded-2xl p-4 text-center">
-                                    <div class="text-4xl mb-2">🎭</div>
-                                    <p class="text-sm font-medium">พาเหรด</p>
-                                </div>
-                                <div class="bg-gradient-to-br from-pink-100 to-rose-200 rounded-2xl p-4 text-center">
-                                    <div class="text-4xl mb-2">🏰</div>
-                                    <p class="text-sm font-medium">Castle</p>
-                                </div>
-                                <div class="bg-gradient-to-br from-purple-100 to-violet-200 rounded-2xl p-4 text-center">
-                                    <div class="text-4xl mb-2">🎆</div>
-                                    <p class="text-sm font-medium">ดอกไม้ไฟ</p>
-                                </div>
-                            </div>
-
-                            <div class="bg-gradient-to-r from-yellow-100 to-pink-100 rounded-2xl p-6 mt-6">
-                                <h4 class="font-semibold text-gray-800 mb-2">💡 Disney Tips</h4>
-                                <ul class="text-sm text-gray-600 space-y-1">
-                                    <li>• ใช้ Disney Premier Access สำหรับเครื่องเล่นยอดนิยม</li>
-                                    <li>• ดาวน์โหลดแอป Shanghai Disney Resort</li>
-                                    <li>• จองร้านอาหารล่วงหน้า</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="day-card hidden" data-day="4">
-                <div class="bg-white rounded-3xl p-8 card-shadow mb-8">
-                    <div class="flex items-center mb-6">
-                        <div class="text-6xl mr-4">🏙️</div>
-                        <div>
-                            <h2 class="text-3xl font-bold text-gray-800">วันที่ 4 – ถนนชิค + Xintiandi/Huaihai + Long Time Ago</h2>
-                            <p class="text-lg text-gray-600">16 ตุลาคม 2025</p>
-                        </div>
-                    </div>
-                    
-                    <div class="grid md:grid-cols-2 gap-8">
-                        <div class="space-y-6">
-                            <div class="flex items-start space-x-4 p-4 bg-amber-50 rounded-2xl cursor-pointer hover:bg-amber-100 transition duration-200 activity-item"
-                                data-title="09:00-11:00 – Wukang Building & Anfu Road"
-                                data-icon="🏢"
-                                data-time="09:00 - 11:00"
-                                data-desc="ชมตึก Wukang (ตึกเรือ) และเดินเล่นถนน Anfu Road ที่มีสไตล์แบบยุโรปและคาเฟ่ชิคๆ">
-                                <span class="text-2xl">🏢</span>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">09:00-11:00 – Wukang Building & Anfu Road</h3>
-                                    <p class="text-gray-600">ถ่ายรูป/เดินเล่น</p>
-                                    <p class="text-gray-600 text-sm mt-1"><strong>การเดินทาง:</strong> Line 10 → Shanghai Library Exit 3</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-start space-x-4 p-4 bg-green-50 rounded-2xl cursor-pointer hover:bg-green-100 transition duration-200 activity-item"
-                                data-title="11:30-13:30 – คาเฟ่"
-                                data-icon="☕"
-                                data-time="11:30 - 13:30"
-                                data-desc="แวะพักจิบกาแฟหรือทานของว่างที่คาเฟ่เก๋ๆ ในย่านนี้ เช่น 13 de Marzo หรือ Butterful & Creamorous">
-                                <span class="text-2xl">☕</span>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">11:30-13:30 – คาเฟ่</h3>
-                                    <p class="text-gray-600">13 de Marzo / Wiggle Tagi / NY Bagelous / Butterful & Creamorous</p>
-                                    <p class="text-gray-600 text-sm mt-1"><strong>การเดินทาง:</strong> เดิน</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-start space-x-4 p-4 bg-purple-50 rounded-2xl cursor-pointer hover:bg-purple-100 transition duration-200 activity-item"
-                                data-title="14:00-16:00 – Xintiandi & Fuxing Park"
-                                data-icon="🛍️"
-                                data-time="14:00 - 16:00"
-                                data-desc="Xintiandi เป็นย่านที่ผสมผสานสถาปัตยกรรมแบบ Shikumen เข้ากับอาคารสมัยใหม่ มีร้านอาหารหรูหรา และร้านค้าแฟชั่น">
-                                <span class="text-2xl">🛍️</span>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">14:00-16:00 – Xintiandi & Fuxing Park</h3>
-                                    <p class="text-gray-600">ช้อปปิ้ง & พักผ่อนหย่อนใจ</p>
-                                    <p class="text-gray-600 text-sm mt-1"><strong>การเดินทาง:</strong> Line 10/13 → Xintiandi Exit 1</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-start space-x-4 p-4 bg-red-50 rounded-2xl cursor-pointer hover:bg-red-100 transition duration-200 activity-item"
-                                data-title="18:30 – Long Time Ago (Longyixia)"
-                                data-icon="🍲"
-                                data-time="18:30 - 20:30"
-                                data-desc="ร้านหม้อไฟ/ชาบูสุดหรูสไตล์จีนโบราณที่มีชื่อเสียง">
-                                <span class="text-2xl">🍲</span>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">18:30 – Dinner: Long Time Ago (Longyixia)</h3>
-                                    <p class="text-gray-600">หม้อไฟ/ชาบูสุดหรูสไตล์จีนโบราณ • เตรียมจองล่วงหน้า</p>
-                                    <p class="text-gray-600 text-sm mt-1"><strong>การเดินทาง:</strong> Line 1/10/12 → Shaanxi South Road</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="space-y-4">
-                            <h3 class="text-xl font-semibold text-gray-800 mb-4">📍 Location Vibe</h3>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="bg-gradient-to-br from-amber-100 to-yellow-200 rounded-2xl p-4 text-center">
-                                    <div class="text-4xl mb-2">🏢</div>
-                                    <p class="text-sm font-medium">Wukang Building</p>
-                                </div>
-                                <div class="bg-gradient-to-br from-green-100 to-emerald-200 rounded-2xl p-4 text-center">
-                                    <div class="text-4xl mb-2">☕</div>
-                                    <p class="text-sm font-medium">Anfu Road</p>
-                                </div>
-                                <div class="bg-gradient-to-br from-purple-100 to-indigo-200 rounded-2xl p-4 text-center">
-                                    <div class="text-4xl mb-2">🏙️</div>
-                                    <p class="text-sm font-medium">Xintiandi</p>
-                                </div>
-                                <div class="bg-gradient-to-br from-red-100 to-pink-200 rounded-2xl p-4 text-center">
-                                    <div class="text-4xl mb-2">🍲</div>
-                                    <p class="text-sm font-medium">Long Time Ago</p>
-                                </div>
-                            </div>
-
-                            <div class="bg-gradient-to-r from-blue-100 to-teal-100 rounded-2xl p-6 mt-6">
-                                <h4 class="font-semibold text-gray-800 mb-2">🚇 Transit Hub</h4>
-                                <ul class="text-sm text-gray-600 space-y-1">
-                                    <li>• วันนี้เน้นการเดินทางด้วย **รถไฟฟ้าใต้ดิน (Metro)** และการเดิน</li>
-                                    <li>• ย่าน French Concession (Wukang/Anfu) ค่อนข้างเดินได้ง่าย</li>
-                                    <li>• ตรวจสอบเวลารถไฟรอบสุดท้าย</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="day-card hidden" data-day="5">
-                <div class="bg-white rounded-3xl p-8 card-shadow mb-8">
-                    <div class="flex items-center mb-6">
-                        <div class="text-6xl mr-4">🛍️</div>
-                        <div>
-                            <h2 class="text-3xl font-bold text-gray-800">วันที่ 5 – เดินทางกลับ</h2>
-                            <p class="text-lg text-gray-600">17 ตุลาคม 2025</p>
-                        </div>
-                    </div>
-
-                            <div class="flex items-start space-x-4 p-4 bg-indigo-50 rounded-2xl cursor-pointer hover:bg-indigo-100 transition duration-200 activity-item"
-                                data-title="03:30-05:15 – เดินทางไปสนามบิน"
-                                data-icon="🛫"
-                                data-time="03:30-05:15"
-                                data-desc="เดินทางไปท่าอากาศยาน เซี่ยงไฮ้ โดยรถบัสโรงแรม">
-                                <span class="text-2xl">🛫</span>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">03:30-05:15 – เดินทางไปสนามบิน</h3>
-                                    <p class="text-gray-600">ด้วยรถบัสโรงแรม</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-start space-x-4 p-4 bg-indigo-50 rounded-2xl cursor-pointer hover:bg-indigo-100 transition duration-200 activity-item"
-                                data-title="06:15-06:55 – เริ่มบอดดิ่ง"
-                                data-icon="🛫"
-                                data-time="06:15-06:55"
-                                data-desc="เริ่มเรียกขึ้นเครื่อง">
-                                <span class="text-2xl">🛫</span>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">"06:15-06:55 – เริ่มบอดดิ่ง</h3>
-                                    <p class="text-gray-600">ด้วยรถบัสโรงแรม</p>
-                                </div>
-                            </div>
-                     
-                        <div class="space-y-4">
-                            <h3 class="text-xl font-semibold text-gray-800 mb-4">✈️ Travel Info</h3>
-                            <div class="bg-gradient-to-r from-pink-100 to-red-100 rounded-2xl p-6">
-                                <h4 class="font-semibold text-gray-800 mb-2">Check-in Reminder</h4>
-                                <ul class="text-sm text-gray-600 space-y-1">
-                                    <li>• **ไฟลท์:** XJ 761</li>
-                                    <li>• **เวลาบิน:** 06:55</li>
-                                    <li>• **เดินทางถึงดอนเมืิอง:** 10:45</li>
-                                    <li>• **เช็คอินล่วงหน้า:** 3 ชั่วโมงครึ่งก่อนเวลาบิน</li>
-                                </ul>
-                            </div>
-
-                            <div class="bg-gradient-to-r from-purple-100 to-blue-100 rounded-2xl p-6">
-                                <h4 class="font-semibold text-gray-800 mb-2">Cash & Card</h4>
-                                <ul class="text-sm text-gray-600 space-y-1">
-                                    <li>• ตรวจสอบยอดเงินคงเหลือในบัตร **Alipay / WeChat Pay**</li>
-                                    <li>• แลกเงินหยวนเผื่อใช้จ่ายเล็กน้อย</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </main>
-
-    <div id="activityModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 transition-opacity duration-300 modal-enter hidden">
-        <div id="modalContent" class="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 p-8 transform transition-transform duration-300 modal-content-enter">
-            <div class="flex justify-between items-start mb-4">
-                <h3 id="modalIcon" class="text-4xl mr-4"></h3>
-                <div>
-                    <h4 id="modalTime" class="text-lg font-semibold text-gray-500"></h4>
-                    <h2 id="modalTitle" class="text-2xl font-bold text-gray-800"></h2>
-                </div>
-            </div>
-            <p id="modalDesc" class="text-gray-600 mb-6 border-l-4 border-purple-400 pl-4 py-1 bg-purple-50 rounded-md"></p>
-            
-            <div class="space-y-3">
-                 <h5 class="text-md font-semibold text-gray-700">📌 รายละเอียดเพิ่มเติม:</h5>
-                 <div class="flex items-center space-x-2 text-sm text-gray-500">
-                    <span class="text-xl">📍</span>
-                    <span id="modalLocation"></span>
-                </div>
-                <div class="flex items-center space-x-2 text-sm text-gray-500">
-                    <span class="text-xl">🕒</span>
-                    <span id="modalDuration"></span>
-                </div>
-            </div>
-
-            <div class="flex justify-end mt-6">
-                <button id="closeModal" class="px-6 py-2 bg-purple-500 text-white font-medium rounded-full hover:bg-purple-600 transition duration-200 shadow-md">
-                    ปิด
-                </button>
-            </div>
-        </div>
+<body>
+  <div class="wrap" role="application" aria-label="Demo แตะบัตร ติ๊กถูกสีเขียว">
+    <div class="head">
+      <div class="logo">T</div>
+      <div>
+        <h1>DEMO — แตะบัตร</h1>
+        <p class="lead">แตะ/คลิกที่บัตรจะขึ้นติ๊กถูกสีเขียว — ไม่เก็บข้อมูล</p>
+      </div>
     </div>
-    <script>
-        // JavaScript สำหรับเปลี่ยนวันและแสดง/ซ่อน Modal
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const dayCards = document.querySelectorAll('.day-card');
-            const dayIndicator = document.getElementById('dayIndicator');
-            const prevDayButton = document.getElementById('prevDay');
-            const nextDayButton = document.getElementById('nextDay');
-            let currentDay = 1;
-            const totalDays = dayCards.length;
-            const dayMap = {
-                1: '13 ตุลาคม 2025',
-                2: '14 ตุลาคม 2025',
-                3: '15 ตุลาคม 2025',
-                4: '16 ตุลาคม 2025',
-                5: '17 ตุลาคม 2025'
-            };
+    <div class="warn"><strong>หมายเหตุ:</strong> ตัวอย่างสาธิตเท่านั้น — ไม่มีการเก็บข้อมูล</div>
 
-            function updateDay(newDay) {
-                if (newDay < 1 || newDay > totalDays) return;
+    <div id="tapArea" class="tapArea" role="button" tabindex="0" aria-pressed="false" aria-label="แตะบัตรเพื่อบันทึก">
+      <div class="cardBox" aria-hidden="true">
+        <div class="cardId">C001</div>
+        <div class="cardName">นาย สมมติ (Demo)</div>
+        <div id="checkMark" class="checkmark">✔</div>
+      </div>
+      <div class="hint">แตะ/คลิกที่นี่</div>
+    </div>
 
-                dayCards.forEach(card => {
-                    card.classList.add('hidden');
-                    card.classList.remove('fade-in');
-                });
+    <footer>ไม่มีการเก็บหรือส่งข้อมูล — รีเฟรชแล้วหายทั้งหมด</footer>
+  </div>
 
-                const currentCard = document.querySelector(`.day-card[data-day="${newDay}"]`);
-                if (currentCard) {
-                    currentCard.classList.remove('hidden');
-                    // Force reflow to restart animation
-                    void currentCard.offsetWidth; 
-                    currentCard.classList.add('fade-in');
-                }
+<script>
+(() => {
+  const tap = document.getElementById('tapArea');
+  const check = document.getElementById('checkMark');
 
-                currentDay = newDay;
-                dayIndicator.querySelector('.text-2xl').textContent = `วันที่ ${currentDay}`;
-                dayIndicator.querySelector('.text-sm').textContent = dayMap[currentDay];
+  function showCheck(){
+    check.style.display = 'block';
+    check.animate([{transform:'scale(0)'},{transform:'scale(1.2)'},{transform:'scale(1)'}], {duration:300, fill:'forwards'});
+    setTimeout(()=> check.style.display = 'none', 1000);
+  }
 
-                prevDayButton.disabled = currentDay === 1;
-                nextDayButton.disabled = currentDay === totalDays;
+  function tinyClickSound(){
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'sine'; o.frequency.value = 1200;
+      g.gain.value = 0.012;
+      o.connect(g); g.connect(ctx.destination);
+      o.start(); o.stop(ctx.currentTime + 0.05);
+    } catch(e){}
+  }
 
-                prevDayButton.classList.toggle('opacity-50', currentDay === 1);
-                prevDayButton.classList.toggle('cursor-not-allowed', currentDay === 1);
-                nextDayButton.classList.toggle('opacity-50', currentDay === totalDays);
-                nextDayButton.classList.toggle('cursor-not-allowed', currentDay === totalDays);
-            }
+  function recordTap(){
+    showCheck();
+    tinyClickSound();
+    tap.setAttribute('aria-pressed','true');
+    setTimeout(()=> tap.setAttribute('aria-pressed','false'), 400);
+  }
 
-            // Initial load
-            updateDay(currentDay);
-
-            prevDayButton.addEventListener('click', () => updateDay(currentDay - 1));
-            nextDayButton.addEventListener('click', () => updateDay(currentDay + 1));
-
-            // ---------------------------------------
-            // START: Modal Logic
-            // ---------------------------------------
-            const modal = document.getElementById('activityModal');
-            const modalContent = document.getElementById('modalContent');
-            const closeModalButton = document.getElementById('closeModal');
-            const activityItems = document.querySelectorAll('.activity-item');
-            
-            // Function to show the modal
-            const showModal = (title, icon, time, desc, day, locationDetail, duration) => {
-                // Set Modal Content
-                document.getElementById('modalIcon').textContent = icon;
-                document.getElementById('modalTitle').textContent = title.replace(`${time} – `, '').replace(`${time}-`, ''); // Clean up title
-                document.getElementById('modalTime').textContent = `(${day}) เวลา: ${time}`;
-                document.getElementById('modalDesc').textContent = desc;
-
-                // Simple logic to set Location/Duration from data-desc or default values
-                let locationText = 'ดูรายละเอียดในกิจกรรมย่อย';
-                let durationText = 'ไม่ได้ระบุระยะเวลาที่แน่นอน';
-
-                // Try to infer location/details from inner p tags (though inconsistent)
-                const detailP = locationDetail;
-                if (detailP) {
-                    // Quick way to separate potential location/duration detail
-                    if (detailP.includes('Line') || detailP.includes('Station') || detailP.includes('Exit')) {
-                        locationText = detailP.split('•')[0].trim();
-                        durationText = detailP.includes('•') ? detailP.split('•')[1].trim() : durationText;
-                    } else {
-                        locationText = detailP;
-                    }
-                }
-
-                // If time is a range, calculate simple duration
-                if (time.includes('-')) {
-                    const [start, end] = time.split('-').map(s => s.trim());
-                    durationText = `จาก ${start} ถึง ${end}`;
-                } else {
-                    durationText = `เวลาเริ่ม: ${time}`;
-                }
-
-
-                document.getElementById('modalLocation').textContent = locationText;
-                document.getElementById('modalDuration').textContent = durationText;
-
-                // Show Modal with Transitions
-                modal.classList.remove('hidden', 'modal-leave-active');
-                modal.classList.add('modal-enter-active');
-                modalContent.classList.remove('modal-content-enter');
-                document.body.style.overflow = 'hidden'; // Prevent scrolling background
-            };
-
-            // Function to hide the modal
-            const hideModal = () => {
-                modal.classList.remove('modal-enter-active');
-                modal.classList.add('modal-leave-active');
-                modalContent.classList.add('modal-content-enter');
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                    document.body.style.overflow = ''; // Restore scrolling
-                }, 300); // Match transition duration
-            };
-
-            // Event Listeners for Activity Items
-            activityItems.forEach(item => {
-                item.addEventListener('click', () => {
-                    const title = item.getAttribute('data-title');
-                    const icon = item.getAttribute('data-icon');
-                    const time = item.getAttribute('data-time');
-                    const desc = item.getAttribute('data-desc');
-                    
-                    // Get Day text from parent element
-                    const dayNumber = item.closest('.day-card').getAttribute('data-day');
-                    const dayText = dayNumber ? `วันที่ ${dayNumber}` : 'ไม่ระบุวัน';
-
-                    // Attempt to extract detail text from inner <p> (for location/more info)
-                    const innerP = item.querySelector('div > p:not([data-desc])');
-                    const locationDetail = innerP ? innerP.textContent : '';
-
-                    showModal(title, icon, time, desc, dayText, locationDetail);
-                });
-            });
-
-            // Event Listeners for Modal Closing
-            closeModalButton.addEventListener('click', hideModal);
-            modal.addEventListener('click', (e) => {
-                // Close when clicking outside the content area
-                if (e.target === modal) {
-                    hideModal();
-                }
-            });
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
-                    hideModal();
-                }
-            });
-            // ---------------------------------------
-            // END: Modal Logic
-            // ---------------------------------------
-        });
-    </script>
+  tap.addEventListener('click', recordTap);
+  tap.addEventListener('keydown', (e)=> {
+    if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); recordTap(); }
+  });
+})();
+</script>
 </body>
 </html>
-
-
